@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PsychePrep QUIZ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface2: #1e2330;
+    --border: #2a3047;
+    --accent: #6c8fff;
+    --accent2: #a78bfa;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e8eaf0;
+    --text-muted: #7b83a0;
+    --text-dim: #4a5270;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(108,143,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(167,139,250,0.10) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== LAYOUT ===== */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; flex-direction: column; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ===== HEADER ===== */
+  header {
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,15,20,0.8);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 16px rgba(108,143,255,0.3);
+  }
+
+  .logo-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* ===== START SCREEN ===== */
+  #start-screen {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .start-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 56px 64px;
+    max-width: 680px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: fadeUp 0.6s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .start-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 32px;
+    box-shadow: 0 8px 32px rgba(108,143,255,0.4);
+  }
+
+  .start-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .start-title span { color: var(--accent); }
+
+  .start-sub {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+
+  /* Topic grid */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+
+  .topic-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.4;
+  }
+
+  .topic-num {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Filter section */
+  .filter-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .filter-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active {
+    background: rgba(108,143,255,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    padding: 14px 28px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    box-shadow: 0 4px 20px rgba(108,143,255,0.35);
+    width: 100%;
+    font-size: 1rem;
+    padding: 16px 32px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(108,143,255,0.5);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(108,143,255,0.06);
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--border); }
+
+  .btn-danger {
+    background: rgba(248,113,113,0.15);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: var(--red);
+  }
+
+  .btn-danger:hover { background: rgba(248,113,113,0.25); }
+
+  .btn-success {
+    background: rgba(74,222,128,0.15);
+    border: 1px solid rgba(74,222,128,0.3);
+    color: var(--green);
+  }
+
+  /* ===== QUIZ SCREEN ===== */
+  #quiz-screen {
+    flex: 1;
+    padding: 0;
+  }
+
+  .quiz-header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--surface);
+  }
+
+  .quiz-counter {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .quiz-counter strong { color: var(--text); }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.85rem;
+  }
+
+  .score-correct { color: var(--green); font-weight: 600; }
+  .score-wrong { color: var(--red); font-weight: 600; }
+
+  /* Question area */
+  .quiz-body {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .topic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(108,143,255,0.12);
+    border: 1px solid rgba(108,143,255,0.25);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .difficulty-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .diff-easy { background: var(--green); }
+  .diff-medium { background: var(--yellow); }
+  .diff-hard { background: var(--red); }
+
+  .question-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    line-height: 1.45;
+    margin-bottom: 32px;
+    letter-spacing: -0.02em;
+    animation: fadeUp 0.35s ease;
+  }
+
+  /* Answer options */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    line-height: 1.5;
+  }
+
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.18s;
+  }
+
+  .option-letter {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.18s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .option-text {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .option-btn:hover:not(:disabled) .option-letter {
+    background: rgba(108,143,255,0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .option-btn.correct {
+    border-color: var(--green);
+    background: rgba(74,222,128,0.08);
+  }
+  .option-btn.correct .option-letter {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0d0f14;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--red);
+    background: rgba(248,113,113,0.08);
+  }
+  .option-btn.wrong .option-letter {
+    background: var(--red);
+    border-color: var(--red);
+    color: #0d0f14;
+  }
+
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  /* Feedback banner */
+  .feedback-banner {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: none;
+    align-items: flex-start;
+    gap: 14px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback-banner.show { display: flex; }
+
+  .feedback-banner.correct-fb {
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.3);
+  }
+
+  .feedback-banner.wrong-fb {
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.3);
+  }
+
+  .feedback-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+
+  .feedback-content { flex: 1; }
+
+  .feedback-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .feedback-banner.correct-fb .feedback-title { color: var(--green); }
+  .feedback-banner.wrong-fb .feedback-title { color: var(--red); }
+
+  .feedback-detail {
+    font-size: 0.87rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Nav buttons */
+  .quiz-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .nav-left { display: flex; gap: 10px; }
+  .nav-right { display: flex; gap: 10px; }
+
+  /* ===== RESULTS SCREEN ===== */
+  #results-screen {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .results-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 56px;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: fadeUp 0.5s ease;
+  }
+
+  .results-top {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .results-emoji {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+  }
+
+  .results-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+
+  .results-label {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .label-excellent { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+  .label-good { background: rgba(108,143,255,0.15); color: var(--accent); border: 1px solid rgba(108,143,255,0.3); }
+  .label-review { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .label-poor { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+
+  .score-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 28px 0;
+  }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    position: relative;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring-pct {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .ring-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .results-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .results-stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .results-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .results-stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  /* Topic breakdown */
+  .breakdown-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+
+  .breakdown-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+
+  .breakdown-name {
+    flex: 1;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .breakdown-bar-wrap {
+    width: 140px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .breakdown-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 1s ease 0.3s;
+  }
+
+  .breakdown-pct {
+    width: 38px;
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .results-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .results-actions .btn { flex: 1; min-width: 140px; }
+
+  /* ===== REVIEW SCREEN ===== */
+  #review-screen { padding: 0; }
+
+  .review-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+
+  .review-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .review-body {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .review-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .review-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .review-q-num {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .review-q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .review-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+  .review-option {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .review-option.correct-opt {
+    background: rgba(74,222,128,0.08);
+    border-color: rgba(74,222,128,0.35);
+    color: var(--green);
+  }
+
+  .review-option.your-wrong {
+    background: rgba(248,113,113,0.08);
+    border-color: rgba(248,113,113,0.35);
+    color: var(--red);
+  }
+
+  .review-tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .correct-tag { background: rgba(74,222,128,0.2); color: var(--green); }
+  .wrong-tag { background: rgba(248,113,113,0.2); color: var(--red); }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 680px) {
+    header { padding: 16px 18px; }
+    .logo-text { font-size: 1.1rem; }
+    .start-card { padding: 32px 22px; }
+    .start-title { font-size: 1.8rem; }
+    .topic-grid { grid-template-columns: 1fr; }
+    .stats-row { gap: 20px; }
+    .quiz-header { padding: 14px 16px; }
+    .quiz-body { padding: 24px 16px; }
+    .question-text { font-size: 1.25rem; }
+    .option-btn { padding: 14px 16px; font-size: 0.88rem; }
+    .results-card { padding: 28px 20px; }
+    .results-title { font-size: 1.6rem; }
+    .results-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .results-stat-num { font-size: 1.5rem; }
+    .quiz-nav { flex-wrap: wrap; }
+    .nav-left, .nav-right { width: 100%; justify-content: flex-start; }
+    .review-header { padding: 16px 18px; }
+    .review-body { padding: 20px 16px; }
+    .review-card { padding: 20px 16px; }
+    .breakdown-bar-wrap { width: 80px; }
+    .results-actions .btn { min-width: 0; }
+  }
+
+  @media (max-width: 400px) {
+    .results-stats { grid-template-columns: 1fr; }
+    .score-ring { width: 130px; height: 130px; }
+    .ring-pct { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===== START SCREEN ===== -->
+<div id="start-screen" class="screen active">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Psyche<span>Prep</span> QUIZ</div>
+    </div>
+    <div class="header-meta">
+      <div class="badge">Psychology Course</div>
+    </div>
+  </header>
+
+  <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px 20px;">
+    <div class="start-card">
+      <div class="start-icon">🧬</div>
+      <h1 class="start-title">Psyche<span>Prep</span><br>QUIZ</h1>
+      <p class="start-sub">Test your knowledge across 10 psychology topics. Questions are randomized every session.</p>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-num" id="total-q-count">120</span>
+          <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">10</span>
+          <div class="stat-label">Topics</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">3</span>
+          <div class="stat-label">Difficulty Levels</div>
+        </div>
+      </div>
+
+      <div class="topic-grid" id="topic-grid"></div>
+
+      <div class="filter-section">
+        <div class="filter-title">Filter by Difficulty</div>
+        <div class="filter-row">
+          <div class="filter-chip active" data-diff="all">All Levels</div>
+          <div class="filter-chip" data-diff="easy">🟢 Easy</div>
+          <div class="filter-chip" data-diff="medium">🟡 Medium</div>
+          <div class="filter-chip" data-diff="hard">🔴 Hard</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="start-btn">
+        Start Quiz ›
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ SCREEN ===== -->
+<div id="quiz-screen" class="screen">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Psyche<span>Prep</span></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:20px; flex:1; margin-left:24px;">
+      <div class="quiz-counter">Q <strong id="q-num">1</strong> / <span id="q-total">120</span></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="score-display">
+      <span class="score-correct">✓ <span id="correct-count">0</span></span>
+      <span class="score-wrong">✗ <span id="wrong-count">0</span></span>
+    </div>
+  </header>
+
+  <div class="quiz-body">
+    <div class="topic-tag" id="q-topic-tag"></div>
+    <div class="question-text" id="q-text"></div>
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="feedback-banner" id="feedback-banner">
+      <div class="feedback-icon" id="feedback-icon"></div>
+      <div class="feedback-content">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div class="feedback-detail" id="feedback-detail"></div>
+      </div>
+    </div>
+
+    <div class="quiz-nav">
+      <div class="nav-left">
+        <button class="btn btn-ghost" id="prev-btn">← Prev</button>
+        <button class="btn btn-outline" id="skip-btn">Skip</button>
+      </div>
+      <div class="nav-right">
+        <button class="btn btn-primary" id="next-btn" style="display:none">Next ›</button>
+        <button class="btn btn-primary" id="finish-btn" style="display:none">Finish Quiz ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div id="results-screen" class="screen">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Psyche<span>Prep</span></div>
+    </div>
+    <div class="header-meta"><div class="badge">Results</div></div>
+  </header>
+
+  <div style="flex:1; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto;">
+    <div class="results-card">
+      <div class="results-top">
+        <span class="results-emoji" id="res-emoji">🏆</span>
+        <h2 class="results-title">Quiz Complete!</h2>
+        <div class="results-label" id="res-label">Excellent</div>
+      </div>
+
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="68" fill="none" stroke="#2a3047" stroke-width="10"/>
+            <circle id="ring-circle" cx="80" cy="80" r="68" fill="none" stroke="url(#ringGrad)" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="427"/>
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#6c8fff"/>
+                <stop offset="100%" style="stop-color:#a78bfa"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-ring-text">
+            <div class="ring-pct" id="ring-pct">0%</div>
+            <div class="ring-sub">Score</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-stats">
+        <div class="results-stat">
+          <div class="results-stat-num" id="res-correct" style="color:var(--green)">0</div>
+          <div class="results-stat-label">Correct</div>
+        </div>
+        <div class="results-stat">
+          <div class="results-stat-num" id="res-wrong" style="color:var(--red)">0</div>
+          <div class="results-stat-label">Incorrect</div>
+        </div>
+        <div class="results-stat">
+          <div class="results-stat-num" id="res-total" style="color:var(--accent)">0</div>
+          <div class="results-stat-label">Answered</div>
+        </div>
+      </div>
+
+      <div class="breakdown-title">Performance by Topic</div>
+      <div class="breakdown-list" id="breakdown-list"></div>
+
+      <div class="results-actions">
+        <button class="btn btn-danger" id="review-btn">Review Mistakes</button>
+        <button class="btn btn-ghost" id="restart-btn">↺ Restart</button>
+        <button class="btn btn-primary" id="home-btn">Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REVIEW SCREEN ===== -->
+<div id="review-screen" class="screen">
+  <div class="review-header">
+    <h2 class="review-title">Review Mistakes</h2>
+    <button class="btn btn-ghost" id="back-to-results">← Results</button>
+  </div>
+  <div class="review-body" id="review-body"></div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// =====================================================================
+// QUESTION DATABASE — 120 Questions across 10 Topics
+// =====================================================================
+const ALL_QUESTIONS = [
+
+  // =====================================================================
+  // TOPIC 1: Introduction to Psychology (12 Qs)
+  // =====================================================================
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "easy",
+    q: "What is the literal Greek meaning of the word 'psychology'?",
+    opts: ["Study of behavior", "Study of the mind/soul", "Study of emotions", "Study of the brain"],
+    ans: 1
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "easy",
+    q: "Who opened the first psychological laboratory in Leipzig, Germany in 1879?",
+    opts: ["William James", "Sigmund Freud", "Wilhelm Wundt", "Hermann Ebbinghaus"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "easy",
+    q: "Which psychologist is called the 'father of American psychology'?",
+    opts: ["B.F. Skinner", "William James", "Carl Rogers", "Jean Piaget"],
+    ans: 1
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "medium",
+    q: "Which philosopher first used the word 'psychology' in 1519?",
+    opts: ["Aristotle", "Descartes", "Rudolf Goeckel", "Immanuel Kant"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "medium",
+    q: "Which perspective in psychology focuses on the dynamic, unconscious forces that influence behavior?",
+    opts: ["Behaviorism", "Structuralism", "Psychodynamic Perspective", "Humanistic Perspective"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "medium",
+    q: "Alfred Bandura is best known for developing which theory?",
+    opts: ["Psychoanalytic Theory", "Social Learning Theory", "Hierarchy of Needs", "Behaviorism"],
+    ans: 1
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "medium",
+    q: "Which branch of psychology studies how people grow and develop across the lifespan?",
+    opts: ["Social Psychology", "Educational Psychology", "Developmental Psychology", "Health Psychology"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "hard",
+    q: "Lev Vygotsky's key contribution to psychology was his emphasis on which factor in learning and personality development?",
+    opts: ["Unconscious drives", "Genetic inheritance", "Communication and social interaction", "Conditioning and reinforcement"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "hard",
+    q: "Which psychological perspective focuses on how communication, social context, and our social environment shape thinking and behavior?",
+    opts: ["Biological Perspective", "Cognitive Perspective", "Sociocultural Perspective", "Humanistic Perspective"],
+    ans: 2
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "easy",
+    q: "According to the lecture, psychology studies behavior, which is defined as:",
+    opts: ["The unconscious drives inside the mind", "The external expression of internal mental processes", "The structure of the brain and nervous system", "A collection of personality traits"],
+    ans: 1
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "medium",
+    q: "Hermann Ebbinghaus's main contribution to psychology was his research on:",
+    opts: ["Emotional intelligence", "Learning and memory", "Social norms and values", "Unconscious conflicts"],
+    ans: 1
+  },
+  {
+    topic: "Introduction to Psychology", topicNum: 1, difficulty: "hard",
+    q: "Ivan Pavlov's work demonstrated that behavior is connected to:",
+    opts: ["Self-actualization needs", "Unconscious wish fulfillment", "Conditioning, attitudes, and communication", "Genetic predispositions only"],
+    ans: 2
+  },
+
+  // =====================================================================
+  // TOPIC 2: Personality — Theories, Traits, Self-Regulation (13 Qs)
+  // =====================================================================
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "easy",
+    q: "According to the lecture, by approximately what age is personality generally fully formed?",
+    opts: ["Age 16", "Age 18", "Age 21", "Age 25"],
+    ans: 3
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "easy",
+    q: "In Freud's model of personality, which component represents instincts, impulses, and the pleasure principle?",
+    opts: ["Ego", "Superego", "Id", "Persona"],
+    ans: 2
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "easy",
+    q: "Which of the Big Five personality traits describes emotional instability?",
+    opts: ["Conscientiousness", "Agreeableness", "Openness", "Neuroticism"],
+    ans: 3
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "According to Carl Rogers's theory of personality, which component refers to the person we currently are?",
+    opts: ["Ideal Self", "Self-Worth", "Self-Image", "Ego"],
+    ans: 2
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "Eysenck identified four temperament types. Which temperament is described as social, active, and outgoing?",
+    opts: ["Melancholic", "Phlegmatic", "Choleric", "Sanguine"],
+    ans: 3
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "Which personality theorist argued that we cannot be reduced to just four personality types and that different situations bring out different aspects of our personality?",
+    opts: ["Cattell", "Eysenck", "Freud", "Skinner"],
+    ans: 0
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "In Freud's structural model, which component represents our highest moral ideals and values?",
+    opts: ["Id", "Ego", "Superego", "Persona"],
+    ans: 2
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "hard",
+    q: "According to Skinner's Behavioral Theory of personality, which factor forms the foundation of adult personality?",
+    opts: ["Unconscious archetypes", "Adult cognitive schemas", "Childhood experiences and environment", "Genetic temperament only"],
+    ans: 2
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "Which of the Big Five traits refers to discipline, sense of morality, and commitment to responsibility?",
+    opts: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness"],
+    ans: 1
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "easy",
+    q: "Self-regulation is best defined as:",
+    opts: ["Suppressing all negative emotions", "Monitoring and managing emotions, thoughts, and behavior to support well-being", "Following rules set by others", "Measuring personality with tests"],
+    ans: 1
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "hard",
+    q: "Which aspect of self-regulation relates to rules, values, empathy, and enabling effective communication in the social environment?",
+    opts: ["Physical Aspect", "Emotional Aspect", "Mental Aspect", "Social Aspect"],
+    ans: 3
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "hard",
+    q: "Erik Erikson's developmental theory describes personality development across which three major life stages?",
+    opts: ["Infancy, childhood, and adolescence", "Childhood, adulthood, and old age", "Adolescence, young adulthood, and middle age", "Birth, puberty, and death"],
+    ans: 1
+  },
+  {
+    topic: "Personality: Theories & Self-Regulation", topicNum: 2, difficulty: "medium",
+    q: "Which self-regulation method involves continuously understanding what stage you are at in life and what resources and challenges you face?",
+    opts: ["Planning", "Monitoring", "Reflection", "Using Feedback"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 3: Motivation & Goal-Directed Behavior (13 Qs)
+  // =====================================================================
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "easy",
+    q: "The word 'motivation' comes from the Latin word 'movere', which means:",
+    opts: ["To feel", "To think", "To move", "To act"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "easy",
+    q: "In Maslow's Hierarchy of Needs, which level represents expressing one's full potential and contributing to others?",
+    opts: ["Esteem Needs", "Safety Needs", "Social Needs", "Self-Actualization"],
+    ans: 3
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "easy",
+    q: "Intrinsic motivation is best described as:",
+    opts: ["Motivation from external rewards like money", "Motivation from social pressure and recognition", "Motivation from one's own needs, values, and internal satisfaction", "Motivation from competition with others"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "Herzberg's Two-Factor Theory distinguishes between motivational factors and:",
+    opts: ["Intrinsic factors", "Growth factors", "Hygiene factors", "Biological factors"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "Alderfer's ERG Model identifies three categories of needs: Existence, Relatedness, and:",
+    opts: ["Goals", "Growth", "Genetics", "Gratification"],
+    ans: 1
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "According to the lecture, approximately what percentage of our motivation comes from external sources?",
+    opts: ["5%", "15%", "35%", "50%"],
+    ans: 1
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "Which motivation theory states that goals are essential and that high goals produce higher motivation?",
+    opts: ["Expectancy Theory", "Equity Theory", "Goal-Setting Theory", "ERG Model"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "hard",
+    q: "In the motivation cycle presented in the lecture, what comes directly after 'Positive Emotion'?",
+    opts: ["New Habits", "Active Behavior", "Focus", "Success"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "hard",
+    q: "Which type of motivation is connected to habits — things we do almost automatically every day?",
+    opts: ["Intrinsic Motivation", "Extrinsic Motivation", "Automatic Motivation", "Non-regulated Motivation"],
+    ans: 2
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "easy",
+    q: "A 'motive' in psychology is defined as:",
+    opts: ["A complete theory of behavior", "A single unit of motivation — a need, want, or interest", "An external reward or punishment", "A type of social conditioning"],
+    ans: 1
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "Intrinsic motivation includes which of the following?",
+    opts: ["Money, recognition, and competition", "Love, belonging, learning, and meaning", "External pressure and social norms", "Status, salary, and working conditions"],
+    ans: 1
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "hard",
+    q: "Which practical self-motivation technique involves deliberately choosing words when talking to yourself and setting goals?",
+    opts: ["Time management", "Neuro-linguistic programming (NLP)", "Equity Theory application", "Hygiene factor analysis"],
+    ans: 1
+  },
+  {
+    topic: "Motivation & Goal-Directed Behavior", topicNum: 3, difficulty: "medium",
+    q: "Expectancy Theory explains that motivation arises from:",
+    opts: ["Meeting basic physiological needs first", "Focusing on a goal and the experience of working toward it", "Comparing one's rewards to others' rewards", "Fulfilling unconscious wishes"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 4: Emotions and Emotional Intelligence (12 Qs)
+  // =====================================================================
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "easy",
+    q: "Which researcher identified eight basic emotions arranged as paired opposites?",
+    opts: ["Daniel Goleman", "Robert Plutchik", "Peter Salovey", "Edward Thorndike"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "easy",
+    q: "According to Daniel Goleman, how many components does emotional intelligence have?",
+    opts: ["Three", "Four", "Five", "Six"],
+    ans: 2
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "easy",
+    q: "What is the key difference between emotions and feelings?",
+    opts: ["Emotions are longer-lasting; feelings are brief", "Emotions are short responses to stimuli; feelings are longer-lasting states shaped by beliefs and memory", "Feelings are physiological; emotions are cognitive", "There is no difference; the terms are interchangeable"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "medium",
+    q: "Who first wrote about 'social intelligence' in 1913, anticipating the concept of emotional intelligence?",
+    opts: ["Abraham Maslow", "Howard Gardner", "Edward Thorndike", "Daniel Goleman"],
+    ans: 2
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "medium",
+    q: "The James-Lange Theory of emotion states that:",
+    opts: ["Emotions are determined purely by genetics", "Emotions are first experienced as physical reactions, then interpreted by the mind", "Emotions arise only from cognitive appraisal", "Emotions are always negative in their evolutionary origin"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "medium",
+    q: "Which component of Goleman's EQ involves understanding the emotions of others?",
+    opts: ["Self-Awareness", "Self-Regulation", "Motivation", "Empathy"],
+    ans: 3
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "hard",
+    q: "Peter Salovey and John Mayer's key contribution was defining emotional intelligence as:",
+    opts: ["An innate, unchangeable personality trait", "A cognitive ability in the social environment that must be learned", "A measure equivalent to IQ", "A set of behaviors learned through conditioning"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "hard",
+    q: "According to the four steps of emotional intelligence in the lecture, the FOURTH and final step is:",
+    opts: ["Emotional Perception", "Using Emotion", "Understanding Others' Emotions", "Managing Emotions"],
+    ans: 3
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "medium",
+    q: "Why, according to Darwin's evolutionary theory, do humans tend to experience more negative emotions than positive ones?",
+    opts: ["Humans are naturally pessimistic by nature", "Negative emotions evolved to keep us safe and alert to danger", "Positive emotions require more cognitive effort", "Social conditioning suppresses positive emotions"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "easy",
+    q: "Emotional Intelligence (EQ) measures:",
+    opts: ["Cognitive knowledge and memory capacity", "The ability to understand, manage, and use emotions", "Physical fitness and health status", "Social status and communication frequency"],
+    ans: 1
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "medium",
+    q: "Which of Plutchik's eight basic emotions is paired as the opposite of 'Trust'?",
+    opts: ["Anger", "Sadness", "Disgust", "Fear"],
+    ans: 2
+  },
+  {
+    topic: "Emotions & Emotional Intelligence", topicNum: 4, difficulty: "hard",
+    q: "In the lecture, which three sources are identified as producing emotional states?",
+    opts: ["Genes, family, and culture", "Psychological activity, behavior, and cognitive processing", "Id, ego, and superego", "Intrinsic needs, extrinsic needs, and automatic habits"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 5: Health Psychology and Stress Management (12 Qs)
+  // =====================================================================
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "easy",
+    q: "Health psychology studies the interaction of which four factors on health?",
+    opts: ["Intelligence, memory, creativity, and skill", "Biology, psychology, behavior, and social factors", "Personality, motivation, emotion, and conflict", "Culture, family, education, and career"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "easy",
+    q: "The term 'psychosomatic' combines 'psyche' (mind) with 'soma', which means:",
+    opts: ["Brain", "Soul", "Body", "Emotion"],
+    ans: 2
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "easy",
+    q: "According to the lecture, what is identified as the most significant risk factor for health today?",
+    opts: ["Smoking", "Poor diet", "Stress", "Lack of exercise"],
+    ans: 2
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "medium",
+    q: "Which key insight underlies the entire field of health psychology, as stated in the lecture?",
+    opts: ["All illness is genetically determined", "All our illnesses begin in the mind", "Physical illness cannot be cured by psychological means", "Stress is always harmful and should be eliminated"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "medium",
+    q: "According to the lecture, what was the key finding from early health psychology experiments about medication?",
+    opts: ["Medication works purely through biochemistry", "People who did not believe in their medication did not benefit from it", "Placebo effects are always harmful", "Belief has no measurable effect on physical health"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "medium",
+    q: "Which of the following is NOT listed as a psychosomatic condition in the lecture?",
+    opts: ["Chronic pain", "High blood pressure", "Skin disorders", "Broken bones"],
+    ans: 3
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "hard",
+    q: "The biopsychosocial model of health identifies three factors. Which combination is correct?",
+    opts: ["Cognitive, behavioral, and social factors", "Biological, social, and psychological factors", "Genetic, emotional, and cultural factors", "Physical, mental, and spiritual factors"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "medium",
+    q: "According to the lecture, small amounts of stress can actually be:",
+    opts: ["Always harmful and should be eliminated", "Healthy, helping us develop new coping behaviors and adapt", "Irrelevant to physical health", "Only harmful for people with neuroticism"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "hard",
+    q: "When a patient visits a doctor with psychosomatic symptoms, why may the physical examination find no cause?",
+    opts: ["The patient is lying about their symptoms", "The doctor lacks sufficient training", "The origin of symptoms is in the patient's mental and emotional state", "Psychosomatic conditions always heal themselves"],
+    ans: 2
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "easy",
+    q: "According to health psychology, smoking is essentially a habit built on which belief?",
+    opts: ["That nicotine provides genuine pleasure", "That smoking builds social connections", "That it provides a break or sense of relief", "That it enhances concentration"],
+    ans: 2
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "medium",
+    q: "Which practical action is recommended for health, because it helps us understand our body and supports both physical and mental well-being?",
+    opts: ["Avoiding all social media", "Sport and physical exercise", "Reducing all forms of communication", "Eliminating all stress completely"],
+    ans: 1
+  },
+  {
+    topic: "Health Psychology & Stress Management", topicNum: 5, difficulty: "hard",
+    q: "According to the lecture, why does knowing about an illness and dwelling on it affect the body?",
+    opts: ["It triggers genetic mutations", "We absorb information — including negative health information — through communication, which can influence our physical state", "It is a purely imaginary effect with no real mechanism", "Only applies to people with anxiety disorders"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 6: Values, Norms, and Social Influence (12 Qs)
+  // =====================================================================
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "easy",
+    q: "In Transactional Analysis, which social position is described as the most psychologically healthy and conflict-free?",
+    opts: ["Child", "Parent", "Adult", "Rescuer"],
+    ans: 2
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "easy",
+    q: "Which model describes three conflict roles: Victim, Rescuer, and Persecutor?",
+    opts: ["Maslow's Hierarchy", "The Karpman Drama Triangle", "Eysenck's Model", "The ERG Model"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "easy",
+    q: "Norms are defined as:",
+    opts: ["Goals we strive to achieve", "Evaluative beliefs about what behavior is appropriate — rules defining right and wrong", "Biological drives and instincts", "Personal values unique to each individual"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "medium",
+    q: "In Transactional Analysis, the 'Child' social position is characterized by:",
+    opts: ["Taking full responsibility for one's needs", "Understanding what must be done and doing it", "Always wanting things but avoiding responsibility, manipulating others", "Setting rules for others and wanting control"],
+    ans: 2
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "medium",
+    q: "According to the lecture, what is the distinction between values and goals?",
+    opts: ["They are the same thing", "Values are behavioral guidelines we live by; goals are specific outcomes we aim to achieve", "Goals are more stable than values", "Values are only relevant in professional contexts"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "medium",
+    q: "Leon Festinger's work showed that our beliefs create our values, which then shape our:",
+    opts: ["Genetic predispositions", "Social norms", "Physical health", "Cognitive schemas"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "hard",
+    q: "The Karpman Drama Triangle's 'Rescuer' role is problematic because:",
+    opts: ["Rescuers create more conflict than Persecutors", "They lose themselves helping others at the expense of their own health and relationships", "They refuse to acknowledge others' suffering", "They take on the Victim role eventually"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "medium",
+    q: "According to the lecture, when we move to a new country and want to belong, we tend to:",
+    opts: ["Abandon all previous values immediately", "Resist adopting any new norms", "Gradually adopt new values and norms as a natural survival and belonging process", "Develop intrapersonal conflict indefinitely"],
+    ans: 2
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "easy",
+    q: "What is the first social rule that all babies learn, according to the lecture?",
+    opts: ["Speak to be heard", "When a baby cries, someone comes", "Cooperate to survive", "Follow the group's norms"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "hard",
+    q: "What does our 'spiritual foundation' consist of, according to the lecture?",
+    opts: ["Religious doctrine and prayer practices", "Goals, meanings, values, interests, norms, and beliefs that give life direction", "Genetic heritage and biological drives only", "External social roles imposed by culture"],
+    ans: 1
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "hard",
+    q: "Which social environment aspect involves communication related to money and material resources?",
+    opts: ["Arts and Culture", "Security", "Economy", "Employment and Community"],
+    ans: 2
+  },
+  {
+    topic: "Values, Norms & Social Influence", topicNum: 6, difficulty: "medium",
+    q: "In the context of Kazakhstani youth, which value system is especially emphasized in contemporary social psychology research?",
+    opts: ["Purely individual achievement and competition", "Collectivist values, cultural identity, and family bonds alongside modern personal growth", "Rejection of traditional values in favor of Western norms", "Spiritual isolation from the social environment"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 7: Communication and Interpersonal Relationships (12 Qs)
+  // =====================================================================
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "easy",
+    q: "Communication is defined in the lecture as:",
+    opts: ["The study of language and grammar", "The process of exchanging information between people using various methods", "The analysis of verbal and written texts", "A one-way transfer of knowledge from teacher to student"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "easy",
+    q: "Which of the following is NOT listed as a type of non-verbal communication in the lecture?",
+    opts: ["Eye contact", "Written letters", "Gestures", "Body language"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "easy",
+    q: "How many principles of effective communication are identified in the lecture?",
+    opts: ["Five", "Six", "Seven", "Ten"],
+    ans: 2
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "medium",
+    q: "The 'Analyst' personality type in communication is characterized by:",
+    opts: ["High energy and focus on motivating others", "Warmth and priority of harmony", "Focus on details, careful thinking, and understanding before acting", "Action-oriented leadership always wanting to be first"],
+    ans: 2
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "medium",
+    q: "Which communication principle requires providing full and important information?",
+    opts: ["Clear", "Consistent", "Complete", "Relevant"],
+    ans: 2
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "medium",
+    q: "Which barrier to communication arises when one person is in a positive state and another is in a negative emotional state?",
+    opts: ["Language barrier", "Belief barrier", "Emotional barrier", "Time barrier"],
+    ans: 2
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "hard",
+    q: "The 'Influencer' personality type in communication prioritizes:",
+    opts: ["Achieving results and being first", "Motivating others — energetic, enthusiastic, and encouraging", "Careful analysis before any action", "Maintaining harmony and close relationships"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "medium",
+    q: "According to the lecture, communication is cumulative. This means:",
+    opts: ["More communication always produces better understanding", "When meeting someone again, they partly communicate with the stored impression from before", "Only the last interaction matters in a relationship", "Written communication accumulates while verbal communication fades"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "easy",
+    q: "Which of the Top 10 Communication Skills involves truly hearing what others say without rushing to speak?",
+    opts: ["Confidence", "Respect", "Open-mindedness", "Active Listening"],
+    ans: 3
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "hard",
+    q: "Why is using the other person's name considered one of the most powerful communication techniques?",
+    opts: ["It establishes authority and control", "It is one of the most personal and engaging words in any interaction, creating connection", "It triggers automatic compliance in the listener", "It signals formality and professionalism"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "medium",
+    q: "In digital communication and online relationships, maintaining healthy boundaries requires awareness of which key psychological phenomenon?",
+    opts: ["Psychosomatic response", "Digital disinhibition — the tendency to behave online in ways one would not offline", "Cognitive dissonance only in face-to-face settings", "Behaviorist conditioning exclusively"],
+    ans: 1
+  },
+  {
+    topic: "Communication & Interpersonal Relationships", topicNum: 7, difficulty: "hard",
+    q: "According to the lecture, which communication channel includes visual (sight), auditory (hearing), and tactile (touch)?",
+    opts: ["Feedback channels only", "The medium through which messages travel from sender to recipient", "The encoding mechanism of the sender", "The decoding mechanism of the recipient"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 8: Group Communication (12 Qs)
+  // =====================================================================
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "easy",
+    q: "Interpersonal communication specifically requires:",
+    opts: ["At least five participants", "Exactly two people exchanging messages", "A formal institutional setting", "Written documentation of the exchange"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "easy",
+    q: "Subject-to-Subject communication is described as:",
+    opts: ["A person interacting with an object", "Two non-human things interacting", "Two active people both sending and receiving messages", "A teacher transmitting information to students"],
+    ans: 2
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "medium",
+    q: "Why is group communication more challenging than interpersonal communication?",
+    opts: ["Groups always contain conflict", "You must communicate with multiple people simultaneously and cannot control each person's interpretation", "Group members share identical beliefs", "Written communication becomes impossible"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "medium",
+    q: "According to the lecture, approximately what percentage of interpersonal understanding is based on non-verbal communication?",
+    opts: ["5-7%", "18-19%", "35-40%", "Over 50%"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "easy",
+    q: "What practical recommendation does the lecture give for addressing a group?",
+    opts: ["Speak spontaneously and naturally", "Always use visual aids", "Write your speech beforehand to review for clarity and potential misunderstandings", "Keep the speech to under one minute"],
+    ans: 2
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "medium",
+    q: "The Group Communication Process cycle described in the lecture is:",
+    opts: ["Goal → Action → Feedback → Result", "Need → Shared Goal → Development → New Ideas → Self-Esteem → Growth", "Input → Processing → Output → Evaluation", "Communication → Conflict → Resolution → Agreement"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "medium",
+    q: "Which benefit of group communication involves the psychological need to belong?",
+    opts: ["Groups offer more ideas than individuals", "Groups provide shared meaning and purpose", "Group membership fulfills the need to belong", "Groups can change your beliefs"],
+    ans: 2
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "hard",
+    q: "Online groups in cyberpsychology present unique challenges because:",
+    opts: ["They always produce more conflict than offline groups", "Members can maintain anonymity, which may alter identity expression and group dynamics in ways not present offline", "Online communication is always more effective than face-to-face", "Technology eliminates non-verbal misunderstandings"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "hard",
+    q: "According to the lecture, working in a team is more productive than working alone for which reason?",
+    opts: ["Teams eliminate individual responsibility", "Other people's ideas restore motivation when it fades, and shared goals feel more significant", "Teams always reach decisions faster", "Individual contributions are less visible and thus less pressured"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "easy",
+    q: "What does the lecture say about choosing your groups?",
+    opts: ["The larger the group, the better your growth", "Choose groups carefully — the right group accelerates your growth and helps you achieve goals", "Groups are always harmful to individual identity", "Your first group (family) is the only important one"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "medium",
+    q: "Key non-verbal signals in interpersonal communication include which of the following?",
+    opts: ["Content of speech, vocabulary, and grammar", "Eye contact, body language, gestures, tone of voice, and space", "Only eye contact and handshakes", "Written words and email formatting"],
+    ans: 1
+  },
+  {
+    topic: "Group Communication & Effectiveness", topicNum: 8, difficulty: "hard",
+    q: "In the context of Kazakhstani students' communication patterns, which factor most significantly shapes group identity and communication norms?",
+    opts: ["Access to technology alone", "Cultural heritage, language (Kazakh and Russian), and collective identity combined with modern educational influences", "Western social media exclusively", "Competition for academic grades"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 9: Psychology of Conflict (12 Qs)
+  // =====================================================================
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "easy",
+    q: "How does psychology understand conflict, in contrast to everyday thinking?",
+    opts: ["As always destructive and harmful", "As a failure of communication that must be avoided", "As a form of communication that can open minds and generate new decisions", "As a sign of deep personal problems"],
+    ans: 2
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "easy",
+    q: "Intrapersonal conflict is defined as:",
+    opts: ["Conflict between two people with incompatible goals", "Conflict between a person and their social group", "Conflict within yourself — between competing needs or desires", "Unconscious conflict that surfaces only in dreams"],
+    ans: 2
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "medium",
+    q: "Which type of conflict occurs between the conscious and unconscious mind?",
+    opts: ["Interpersonal Conflict", "Intrapersonal Conflict", "Unconscious Conflict", "Ideological Conflict"],
+    ans: 2
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "medium",
+    q: "In Transactional Analysis, which pairing allows communication WITHOUT conflict?",
+    opts: ["Two Children", "Parent and Child", "Child and Adult", "Two Adults"],
+    ans: 3
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "medium",
+    q: "Which of the four areas of conflict involves incompatible beliefs, cultural values, or worldviews?",
+    opts: ["Economic Conflict", "Ideological Conflict", "Social Conflict", "Family Conflict"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "easy",
+    q: "Constructive conflict is defined as:",
+    opts: ["Conflict where parties only want to show their position and express anger", "Conflict where parties seek understanding and a shared goal, producing new understanding", "Conflict that is suppressed and never expressed", "Conflict that involves only minor disagreements"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "hard",
+    q: "Which 'conflict gene' — trigger — involves promising to do something and then not doing it?",
+    opts: ["Words", "Actions", "Deeds", "Emotions"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "medium",
+    q: "To convert conflict into constructive communication, the lecture recommends:",
+    opts: ["Immediately ending the conflict by walking away", "Asking yourself what you want to show and expressing your emotional state instead of attacking", "Always involving a mediator", "Using formal written communication only"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "hard",
+    q: "The Karpman Drama Triangle is described as 'self-sustaining' because:",
+    opts: ["All three roles benefit equally", "The three roles maintain and reinforce each other; exiting requires conscious self-reflection", "It always produces constructive outcomes eventually", "Only the Rescuer can break the cycle"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "medium",
+    q: "What does it mean that conflict is a 'dynamic process'?",
+    opts: ["Conflict is always rapidly resolved", "Conflict has a beginning, development, and result — it is not static", "Conflict is driven purely by personality", "Only dynamic people experience conflict"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "hard",
+    q: "Henri Tajfel's Social Identity Theory relates to conflict by explaining how:",
+    opts: ["Unconscious drives produce group aggression", "In-group favoritism and out-group discrimination arise from group membership and social identity", "Economic inequality is the only cause of intergroup conflict", "Conflict is always resolved through authority figures"],
+    ans: 1
+  },
+  {
+    topic: "Psychology of Group & Socio-Psychological Conflict", topicNum: 9, difficulty: "easy",
+    q: "Family conflict specifically arises from issues related to:",
+    opts: ["International political disputes", "Roles, boundaries, growing up, self-expression, and changing positions within the family", "Economic resource distribution at the national level", "Workplace disagreements carried home"],
+    ans: 1
+  },
+
+  // =====================================================================
+  // TOPIC 10: Meaning of Life & Psychological Well-being (12 Qs)
+  // =====================================================================
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "easy",
+    q: "Viktor Frankl identified how many primary sources of meaning in life?",
+    opts: ["Two", "Three", "Four", "Five"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "easy",
+    q: "According to Frankl, which source of meaning is considered the most enduring?",
+    opts: ["Family", "Work", "Helping other people", "Religion"],
+    ans: 2
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "easy",
+    q: "The three basic psychological needs in Ryan and Deci's Self-Determination Theory are:",
+    opts: ["Esteem, belonging, and safety", "Competence, relatedness, and autonomy", "Growth, recognition, and achievement", "Meaning, identity, and values"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "medium",
+    q: "What does Viktor Frankl's quote 'The sole meaning of life is to serve humanity' emphasize?",
+    opts: ["That personal achievement is meaningless", "That helping others is the deepest and most enduring source of life's meaning", "That professional success is the ultimate goal", "That family relationships come above everything"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "medium",
+    q: "In Self-Determination Theory, 'Autonomy' as a basic need refers to:",
+    opts: ["Financial independence only", "Freedom from social obligations", "The need to feel that we are growing and developing — that our life is fully lived", "The ability to make decisions without consulting others"],
+    ans: 2
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "medium",
+    q: "Rukhani Zhangyru is a national program in Kazakhstan aimed at:",
+    opts: ["Improving economic productivity", "Spiritual and cultural revival — reconnecting people with their heritage and inspiring personal growth", "Reforming the education system's curriculum", "Promoting digital literacy among youth"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "hard",
+    q: "Frankl emphasized 'living in the present moment'. In the context of psychological well-being, this means:",
+    opts: ["Ignoring future planning entirely", "Being fully aware of what you feel, want, and think right now — freedom from harmful future anxieties and past regrets", "Achieving all goals before focusing on relationships", "Prioritizing physical health above mental health"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "medium",
+    q: "According to the lecture, the meaning of life changes as:",
+    opts: ["We acquire more money and status", "We grow and our position in life changes", "We adopt the beliefs of our social group completely", "External events dictate our emotional state"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "hard",
+    q: "The Two Keys of Self-Determination described in the lecture are:",
+    opts: ["Competence and relatedness", "The need to grow and meaning of life as motivation", "Autonomy and belonging", "Goal-setting and habit formation"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "easy",
+    q: "According to the lecture, people with high self-determination:",
+    opts: ["Avoid taking personal risks", "Believe in their own abilities and find life genuinely interesting", "Depend heavily on external validation", "Prioritize safety needs above all others"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "hard",
+    q: "The lecture states that goals help us not only understand what we want, but also:",
+    opts: ["Eliminate conflict from our lives permanently", "Find people who share similar goals and want to be part of our journey", "Guarantee professional success", "Replace the need for emotional support"],
+    ans: 1
+  },
+  {
+    topic: "Meaning of Life & Psychological Well-being", topicNum: 10, difficulty: "medium",
+    q: "Modern psychological research confirms that when we help others, we experience:",
+    opts: ["Reduced personal motivation", "Increased financial rewards", "A clearer sense of why we exist and why our life matters", "Greater physical fatigue"],
+    ans: 2
+  }
+];
+
+// =====================================================================
+// TOPIC NAMES
+// =====================================================================
+const TOPICS = [
+  "Introduction to Psychology",
+  "Personality: Theories & Self-Regulation",
+  "Motivation & Goal-Directed Behavior",
+  "Emotions & Emotional Intelligence",
+  "Health Psychology & Stress Management",
+  "Values, Norms & Social Influence",
+  "Communication & Interpersonal Relationships",
+  "Group Communication & Effectiveness",
+  "Psychology of Group & Socio-Psychological Conflict",
+  "Meaning of Life & Psychological Well-being"
+];
+
+const DIFF_ICONS = { easy: '🟢', medium: '🟡', hard: '🔴' };
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+// =====================================================================
+// STATE
+// =====================================================================
+let state = {
+  questions: [],
+  current: 0,
+  answers: {},      // index → chosen option index (-1 = skipped)
+  revealed: {},     // index → true if answered
+  correct: 0,
+  wrong: 0,
+  filter: 'all',
+  started: false
+};
+
+// =====================================================================
+// UTILS
+// =====================================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// =====================================================================
+// START SCREEN SETUP
+// =====================================================================
+function buildTopicGrid() {
+  const grid = document.getElementById('topic-grid');
+  TOPICS.forEach((t, i) => {
+    const el = document.createElement('div');
+    el.className = 'topic-item';
+    el.innerHTML = `<span class="topic-num">${i + 1}</span><span>${t}</span>`;
+    grid.appendChild(el);
+  });
+}
+
+function updateTotalCount() {
+  const f = state.filter;
+  const count = f === 'all' ? ALL_QUESTIONS.length : ALL_QUESTIONS.filter(q => q.difficulty === f).length;
+  document.getElementById('total-q-count').textContent = count;
+}
+
+function initStart() {
+  buildTopicGrid();
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.filter = chip.dataset.diff;
+      updateTotalCount();
+    });
+  });
+
+  document.getElementById('start-btn').addEventListener('click', startQuiz);
+}
+
+// =====================================================================
+// QUIZ LOGIC
+// =====================================================================
+function prepareQuestions() {
+  let pool = state.filter === 'all' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.difficulty === state.filter);
+  // Shuffle questions and shuffle each question's answer options
+  pool = shuffle(pool).map(q => {
+    const opts = q.opts.map((o, i) => ({ text: o, orig: i }));
+    const shuffledOpts = shuffle(opts);
+    const newAns = shuffledOpts.findIndex(o => o.orig === q.ans);
+    return { ...q, shuffledOpts, shuffledAns: newAns };
+  });
+  return pool;
+}
+
+function startQuiz() {
+  state.questions = prepareQuestions();
+  state.current = 0;
+  state.answers = {};
+  state.revealed = {};
+  state.correct = 0;
+  state.wrong = 0;
+
+  document.getElementById('q-total').textContent = state.questions.length;
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const idx = state.current;
+  const q = state.questions[idx];
+  const total = state.questions.length;
+  const answered = state.revealed[idx];
+
+  // Header
+  document.getElementById('q-num').textContent = idx + 1;
+  document.getElementById('progress-fill').style.width = ((idx + 1) / total * 100) + '%';
+  document.getElementById('correct-count').textContent = state.correct;
+  document.getElementById('wrong-count').textContent = state.wrong;
+
+  // Topic tag
+  document.getElementById('q-topic-tag').innerHTML =
+    `<span class="difficulty-dot diff-${q.difficulty}"></span> Topic ${q.topicNum}: ${q.topic} · ${DIFF_ICONS[q.difficulty]} ${q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)}`;
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-text').style.animation = 'none';
+  void document.getElementById('q-text').offsetWidth;
+  document.getElementById('q-text').style.animation = '';
+
+  // Options
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.shuffledOpts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<div class="option-letter">${LETTERS[i]}</div><div class="option-text">${opt.text}</div>`;
+    btn.setAttribute('aria-label', `Option ${LETTERS[i]}: ${opt.text}`);
+
+    if (answered) {
+      btn.disabled = true;
+      if (i === q.shuffledAns) btn.classList.add('correct');
+      if (state.answers[idx] === i && i !== q.shuffledAns) btn.classList.add('wrong');
+    } else {
+      btn.addEventListener('click', () => selectAnswer(idx, i));
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); selectAnswer(idx, i); });
+    }
+    grid.appendChild(btn);
+  });
+
+  // Feedback
+  const fb = document.getElementById('feedback-banner');
+  fb.className = 'feedback-banner';
+  if (answered) {
+    const chosen = state.answers[idx];
+    if (chosen === q.shuffledAns) {
+      fb.classList.add('show', 'correct-fb');
+      document.getElementById('feedback-icon').textContent = '✅';
+      document.getElementById('feedback-title').textContent = 'Correct!';
+      document.getElementById('feedback-detail').textContent = 'Well done! That is the right answer.';
+    } else if (chosen === undefined || chosen === -1) {
+      fb.classList.add('show', 'wrong-fb');
+      document.getElementById('feedback-icon').textContent = '⏭️';
+      document.getElementById('feedback-title').textContent = 'Skipped';
+      document.getElementById('feedback-detail').textContent = `The correct answer was: ${q.shuffledOpts[q.shuffledAns].text}`;
+    } else {
+      fb.classList.add('show', 'wrong-fb');
+      document.getElementById('feedback-icon').textContent = '❌';
+      document.getElementById('feedback-title').textContent = 'Incorrect';
+      document.getElementById('feedback-detail').textContent = `The correct answer is: ${q.shuffledOpts[q.shuffledAns].text}`;
+    }
+  }
+
+  // Nav buttons
+  document.getElementById('prev-btn').style.display = idx === 0 ? 'none' : '';
+  document.getElementById('skip-btn').style.display = answered ? 'none' : '';
+
+  const isLast = idx === total - 1;
+  if (answered) {
+    document.getElementById('next-btn').style.display = isLast ? 'none' : '';
+    document.getElementById('finish-btn').style.display = isLast ? '' : 'none';
+  } else {
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('finish-btn').style.display = 'none';
+  }
+}
+
+function selectAnswer(idx, chosen) {
+  if (state.revealed[idx]) return;
+
+  const q = state.questions[idx];
+  state.revealed[idx] = true;
+  state.answers[idx] = chosen;
+
+  if (chosen === q.shuffledAns) {
+    state.correct++;
+  } else {
+    state.wrong++;
+  }
+
+  document.getElementById('correct-count').textContent = state.correct;
+  document.getElementById('wrong-count').textContent = state.wrong;
+  renderQuestion();
+}
+
+function skipQuestion() {
+  const idx = state.current;
+  if (state.revealed[idx]) return;
+  state.revealed[idx] = true;
+  state.answers[idx] = -1;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (state.current < state.questions.length - 1) {
+    state.current++;
+    renderQuestion();
+  }
+}
+
+function prevQuestion() {
+  if (state.current > 0) {
+    state.current--;
+    renderQuestion();
+  }
+}
+
+// =====================================================================
+// RESULTS
+// =====================================================================
+function showResults() {
+  const total = state.questions.length;
+  const answered = Object.keys(state.revealed).length;
+  const pct = total > 0 ? Math.round(state.correct / total * 100) : 0;
+
+  document.getElementById('res-correct').textContent = state.correct;
+  document.getElementById('res-wrong').textContent = state.wrong;
+  document.getElementById('res-total').textContent = answered;
+
+  // Ring
+  const circumference = 427;
+  const offset = circumference - (pct / 100 * circumference);
+  const ring = document.getElementById('ring-circle');
+  ring.style.strokeDashoffset = circumference;
+  document.getElementById('ring-pct').textContent = pct + '%';
+
+  setTimeout(() => { ring.style.transition = 'stroke-dashoffset 1.2s ease'; ring.style.strokeDashoffset = offset; }, 100);
+
+  // Label
+  let emoji, label, labelClass;
+  if (pct >= 85) { emoji = '🏆'; label = 'Excellent!'; labelClass = 'label-excellent'; }
+  else if (pct >= 65) { emoji = '👍'; label = 'Good Work'; labelClass = 'label-good'; }
+  else if (pct >= 45) { emoji = '📚'; label = 'Needs Review'; labelClass = 'label-review'; }
+  else { emoji = '💪'; label = 'Keep Studying'; labelClass = 'label-poor'; }
+
+  document.getElementById('res-emoji').textContent = emoji;
+  const labelEl = document.getElementById('res-label');
+  labelEl.textContent = label;
+  labelEl.className = 'results-label ' + labelClass;
+
+  // Topic breakdown
+  const breakdown = {};
+  TOPICS.forEach((t, i) => { breakdown[i + 1] = { correct: 0, total: 0, name: t }; });
+
+  state.questions.forEach((q, idx) => {
+    breakdown[q.topicNum].total++;
+    if (state.revealed[idx] && state.answers[idx] === q.shuffledAns) {
+      breakdown[q.topicNum].correct++;
+    }
+  });
+
+  const list = document.getElementById('breakdown-list');
+  list.innerHTML = '';
+  Object.values(breakdown).filter(b => b.total > 0).forEach(b => {
+    const p = b.total > 0 ? Math.round(b.correct / b.total * 100) : 0;
+    const item = document.createElement('div');
+    item.className = 'breakdown-item';
+    item.innerHTML = `
+      <div class="breakdown-name" title="${b.name}">${b.name}</div>
+      <div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:0%" data-pct="${p}"></div></div>
+      <div class="breakdown-pct">${p}%</div>`;
+    list.appendChild(item);
+  });
+
+  showScreen('results-screen');
+  setTimeout(() => {
+    document.querySelectorAll('.breakdown-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 200);
+
+  // Review button visibility
+  const mistakes = state.questions.filter((q, i) => state.revealed[i] && state.answers[i] !== q.shuffledAns);
+  document.getElementById('review-btn').style.display = mistakes.length > 0 ? '' : 'none';
+}
+
+// =====================================================================
+// REVIEW MISTAKES
+// =====================================================================
+function showReview() {
+  const body = document.getElementById('review-body');
+  body.innerHTML = '';
+
+  const mistakes = state.questions
+    .map((q, i) => ({ q, i }))
+    .filter(({ q, i }) => state.revealed[i] && state.answers[i] !== q.shuffledAns);
+
+  if (mistakes.length === 0) {
+    body.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:40px;">No mistakes to review! 🎉</p>';
+  } else {
+    mistakes.forEach(({ q, i }, num) => {
+      const chosen = state.answers[i];
+      const card = document.createElement('div');
+      card.className = 'review-card';
+
+      let optsHTML = '';
+      q.shuffledOpts.forEach((opt, oi) => {
+        let cls = 'review-option';
+        let tag = '';
+        if (oi === q.shuffledAns) { cls += ' correct-opt'; tag = '<span class="review-tag correct-tag">Correct</span>'; }
+        else if (oi === chosen && chosen !== -1) { cls += ' your-wrong'; tag = '<span class="review-tag wrong-tag">Your Answer</span>'; }
+        optsHTML += `<div class="${cls}"><span>${LETTERS[oi]}.</span> ${opt.text} ${tag}</div>`;
+      });
+
+      card.innerHTML = `
+        <div class="review-card-header">
+          <div class="review-q-text">${q.q}</div>
+          <div class="review-q-num">Q${i + 1}</div>
+        </div>
+        <div class="topic-tag" style="margin-bottom:14px; font-size:0.75rem;">Topic ${q.topicNum}: ${q.topic}</div>
+        <div class="review-options">${optsHTML}</div>
+        ${chosen === -1 ? '<div style="font-size:0.82rem; color:var(--text-muted); margin-top:8px;">⏭️ This question was skipped.</div>' : ''}
+      `;
+      body.appendChild(card);
+    });
+
+    // Back button at bottom
+    const backBtn = document.createElement('div');
+    backBtn.style = 'text-align:center; padding:20px 0 40px;';
+    backBtn.innerHTML = '<button class="btn btn-ghost" onclick="showScreen(\'results-screen\')">← Back to Results</button>';
+    body.appendChild(backBtn);
+  }
+
+  showScreen('review-screen');
+}
+
+// =====================================================================
+// EVENT LISTENERS
+// =====================================================================
+document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+document.getElementById('skip-btn').addEventListener('click', skipQuestion);
+document.getElementById('next-btn').addEventListener('click', nextQuestion);
+document.getElementById('finish-btn').addEventListener('click', showResults);
+document.getElementById('review-btn').addEventListener('click', showReview);
+document.getElementById('back-to-results').addEventListener('click', () => showScreen('results-screen'));
+document.getElementById('restart-btn').addEventListener('click', startQuiz);
+document.getElementById('home-btn').addEventListener('click', () => {
+  updateTotalCount();
+  showScreen('start-screen');
+});
+
+// =====================================================================
+// INIT
+// =====================================================================
+initStart();
+</script>
+</body>
+</html>
